@@ -11,10 +11,14 @@
     }
   },
   "files": ["dist"],
+  "license": "MIT",
+  "author": "wilson",
+  "keywords": ["hoverfly", "mocha", "testing", "simulation", "service-virtualization"],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "mocha",
     "clean": "rm -rf dist",
+    "prepare": "npm run build",
     "prepublishOnly": "npm run clean && npm run build"
   },
   "dependencies": {
