@@ -4,7 +4,7 @@
  * In real usage, nock intercepts would be replaced by actual calls to a
  * service running in front of Hoverfly (e.g. http://localhost:8500).
  * Here, nock intercepts both the Hoverfly admin API calls (port 8888) AND
- * simulates the service responses so the examples are self-contained.
+ * simulates the service responses (port 8500) so the examples are self-contained.
  */
 import * as assert from 'assert';
 import * as path from 'path';

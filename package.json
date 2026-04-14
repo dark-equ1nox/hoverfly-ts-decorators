@@ -1,6 +1,6 @@
 {
   "name": "hoverfly-ts-decorators",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "TypeScript helpers for loading Hoverfly simulations in Mocha tests",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,13 +10,22 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "license": "MIT",
   "author": "wilson",
-  "keywords": ["hoverfly", "mocha", "testing", "simulation", "service-virtualization"],
+  "keywords": [
+    "hoverfly",
+    "mocha",
+    "testing",
+    "simulation",
+    "service-virtualization"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "mocha",
+    "test:integration": "mocha --require ts-node/register --spec 'test/integration/**/*.test.ts' --timeout 30000",
     "clean": "rm -rf dist",
     "prepare": "npm run build",
     "prepublishOnly": "npm run clean && npm run build"

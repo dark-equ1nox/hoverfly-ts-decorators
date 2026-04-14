@@ -1,0 +1,7 @@
+services:
+  hoverfly:
+    image: spectolabs/hoverfly:latest
+    ports:
+      - "18888:8888" # Admin API (non-default host port to avoid conflicts)
+      - "18500:8500" # Webserver (simulated responses)
+    command: -webserver
