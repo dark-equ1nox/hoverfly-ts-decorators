@@ -15,11 +15,11 @@ describe('loadSimulation()', function () {
   it('clears then loads a simulation', async function () {
     const calls: string[] = [];
 
-    nock('http://localhost:8888')
+    nock('http://localhost:8500')
       .delete('/api/v2/simulation')
       .reply(200, () => { calls.push('DELETE'); return ''; });
 
-    nock('http://localhost:8888')
+    nock('http://localhost:8500')
       .put('/api/v2/simulation')
       .reply(200, () => { calls.push('PUT'); return ''; });
 
@@ -31,7 +31,7 @@ describe('loadSimulation()', function () {
   it('skips DELETE and uses POST when append is true', async function () {
     const calls: string[] = [];
 
-    nock('http://localhost:8888')
+    nock('http://localhost:8500')
       .post('/api/v2/simulation')
       .reply(200, () => { calls.push('POST'); return ''; });
 
@@ -53,7 +53,7 @@ describe('loadSimulation()', function () {
   });
 
   it('sends auth token when provided', async function () {
-    const scope = nock('http://localhost:8888', {
+    const scope = nock('http://localhost:8500', {
       reqheaders: { authorization: 'Bearer test-token' },
     })
       .delete('/api/v2/simulation')
@@ -67,7 +67,7 @@ describe('loadSimulation()', function () {
   });
 
   it('can load different simulations in sequence', async function () {
-    nock('http://localhost:8888')
+    nock('http://localhost:8500')
       .delete('/api/v2/simulation').reply(200)
       .put('/api/v2/simulation').reply(200)
       .delete('/api/v2/simulation').reply(200)
@@ -86,7 +86,7 @@ describe('useSimulation()', function () {
   describe('registered as a before() hook', function () {
     // Set up nock before useSimulation() registers its before() hook
     before(function () {
-      nock('http://localhost:8888')
+      nock('http://localhost:8500')
         .delete('/api/v2/simulation')
         .reply(200)
         .put('/api/v2/simulation')
@@ -104,7 +104,7 @@ describe('useSimulation()', function () {
 
   describe('with append option', function () {
     before(function () {
-      nock('http://localhost:8888')
+      nock('http://localhost:8500')
         .post('/api/v2/simulation')
         .reply(200);
     });

@@ -1,4 +1,6 @@
 require:
   - ts-node/register
-spec: test/**/*.test.ts
+spec:
+  - test/unit/**/*.test.ts
+  - test/examples/**/*.test.ts
 timeout: 5000

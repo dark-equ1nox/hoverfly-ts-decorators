@@ -17,6 +17,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "mocha",
+    "test:integration": "mocha --require ts-node/register --spec 'test/integration/**/*.test.ts' --timeout 30000",
     "clean": "rm -rf dist",
     "prepare": "npm run build",
     "prepublishOnly": "npm run clean && npm run build"
