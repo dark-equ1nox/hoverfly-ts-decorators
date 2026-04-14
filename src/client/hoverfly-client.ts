@@ -61,7 +61,7 @@ function formatError(err: unknown): string {
 export function createClient(options: SimulationOptions = {}): HoverflyClient {
   return new HoverflyClient({
     host: options.host ?? process.env['HOVERFLY_HOST'] ?? 'localhost',
-    port: options.port ?? parseInt(process.env['HOVERFLY_PORT'] ?? '8500', 10),
+    port: options.port ?? parseInt(process.env['HOVERFLY_PORT'] ?? '8888', 10),
     authToken: options.authToken ?? process.env['HOVERFLY_AUTH_TOKEN'],
     append: options.append ?? false,
   });

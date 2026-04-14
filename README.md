@@ -14,7 +14,7 @@ npm install hoverfly-ts-decorators
 
 Hoverfly must be running and accessible before your tests execute. The simplest way is Docker Compose (see [Integration tests](#integration-tests)), but any running Hoverfly instance works.
 
-By default the library connects to `localhost:8500`. Override this with environment variables or per-call options (see [Configuration](#configuration)).
+By default the library connects to `localhost:8888` (Hoverfly's admin API). Override this with environment variables or per-call options (see [Configuration](#configuration)).
 
 ## Quick start
 
@@ -97,7 +97,7 @@ Async function that clears and loads a simulation. Call directly inside `it()` f
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `host` | `string` | `HOVERFLY_HOST` env var or `'localhost'` | Hoverfly admin API host |
-| `port` | `number` | `HOVERFLY_PORT` env var or `8500` | Hoverfly service API port |
+| `port` | `number` | `HOVERFLY_PORT` env var or `8888` | Hoverfly admin API port |
 | `authToken` | `string` | `HOVERFLY_AUTH_TOKEN` env var | Bearer token for authenticated Hoverfly instances |
 | `append` | `boolean` | `false` | When `true`, POSTs to append pairs instead of clearing and replacing |
 
@@ -108,7 +108,7 @@ Lower-level class for direct admin API access.
 ```typescript
 import { createClient } from 'hoverfly-ts-decorators';
 
-const client = createClient({ host: 'localhost', port: 8500 });
+const client = createClient({ host: 'localhost', port: 8888 });
 await client.clearSimulations();
 await client.loadSimulation('./simulations/users.json');
 ```
@@ -120,7 +120,7 @@ The library reads three environment variables as defaults. Any value passed in `
 | Variable | Default | Description |
 |---|---|---|
 | `HOVERFLY_HOST` | `localhost` | Admin API hostname |
-| `HOVERFLY_PORT` | `8500` | Admin API port |
+| `HOVERFLY_PORT` | `8888` | Admin API port |
 | `HOVERFLY_AUTH_TOKEN` | _(none)_ | Bearer token for authenticated instances |
 
 ## Integration tests

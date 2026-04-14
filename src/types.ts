@@ -1,7 +1,7 @@
 export interface SimulationOptions {
   /** Hoverfly admin API host. Defaults to HOVERFLY_HOST env var or 'localhost'. */
   host?: string;
-  /** Hoverfly admin API port. Defaults to HOVERFLY_PORT env var or 8500. */
+  /** Hoverfly admin API port. Defaults to HOVERFLY_PORT env var or 8888. */
   port?: number;
   /** Bearer token for authenticated Hoverfly instances. Defaults to HOVERFLY_AUTH_TOKEN env var. */
   authToken?: string;

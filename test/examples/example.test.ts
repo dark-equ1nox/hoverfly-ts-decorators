@@ -3,8 +3,8 @@
  *
  * In real usage, nock intercepts would be replaced by actual calls to a
  * service running in front of Hoverfly (e.g. http://localhost:8500).
- * Here, nock intercepts both the Hoverfly admin API calls AND simulates the
- * service responses (both on port 8500) so the examples are self-contained.
+ * Here, nock intercepts both the Hoverfly admin API calls (port 8888) AND
+ * simulates the service responses (port 8500) so the examples are self-contained.
  */
 import * as assert from 'assert';
 import * as path from 'path';
@@ -23,7 +23,7 @@ const FIXTURES = path.resolve(__dirname, '../fixtures');
 describe('Example 1: suite-level simulation with useSimulation()', function () {
   // Intercept Hoverfly admin API calls made by the before() hook
   before(function () {
-    nock('http://localhost:8500')
+    nock('http://localhost:8888')
       .delete('/api/v2/simulation').reply(200)
       .put('/api/v2/simulation').reply(200);
   });
@@ -73,7 +73,7 @@ describe('Example 2: per-test simulation with loadSimulation()', function () {
 
   it('loads users simulation and calls the users endpoint', async function () {
     // Hoverfly admin API
-    nock('http://localhost:8500')
+    nock('http://localhost:8888')
       .delete('/api/v2/simulation').reply(200)
       .put('/api/v2/simulation').reply(200);
 
@@ -91,7 +91,7 @@ describe('Example 2: per-test simulation with loadSimulation()', function () {
 
   it('loads products simulation and calls the products endpoint', async function () {
     // Hoverfly admin API
-    nock('http://localhost:8500')
+    nock('http://localhost:8888')
       .delete('/api/v2/simulation').reply(200)
       .put('/api/v2/simulation').reply(200);
 
@@ -118,7 +118,7 @@ describe('Example 3: appending a simulation without clearing', function () {
 
   it('appends products on top of an existing simulation', async function () {
     // Only a POST — no DELETE
-    nock('http://localhost:8500')
+    nock('http://localhost:8888')
       .post('/api/v2/simulation').reply(200);
 
     await loadSimulation(path.join(FIXTURES, 'products.json'), { append: true });
