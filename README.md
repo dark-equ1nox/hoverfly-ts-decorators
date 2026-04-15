@@ -122,15 +122,3 @@ The library reads three environment variables as defaults. Any value passed in `
 | `HOVERFLY_HOST` | `localhost` | Admin API hostname |
 | `HOVERFLY_PORT` | `8888` | Admin API port |
 | `HOVERFLY_AUTH_TOKEN` | _(none)_ | Bearer token for authenticated instances |
-
-## Integration tests
-
-A `docker-compose.yml` is included that starts Hoverfly in webserver mode on port 18500 (admin API on 18888).
-
-```sh
-docker compose up -d
-npm run test:integration
-docker compose down
-```
-
-The integration tests in `test/integration/` run against a live Hoverfly instance and verify real end-to-end behavior including simulation loading, clearing, and appending.
