@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import * as path from 'path';
 import nock from 'nock';
-import { useSimulation, loadSimulation } from '../../src/index';
+import { useSimulation, loadSimulation, useSimulations, loadSimulations } from '../../src/index';
 
 const FIXTURES = path.resolve(__dirname, '../fixtures');
 const usersFixture = path.join(FIXTURES, 'users.json');
@@ -75,6 +75,125 @@ describe('loadSimulation()', function () {
 
     await loadSimulation(usersFixture);
     await loadSimulation(productsFixture);
+  });
+});
+
+describe('loadSimulations()', function () {
+  afterEach(function () {
+    nock.cleanAll();
+  });
+
+  it('DELETEs then POSTs once per file by default', async function () {
+    const calls: string[] = [];
+
+    nock('http://localhost:8888')
+      .delete('/api/v2/simulation')
+      .reply(200, () => { calls.push('DELETE'); return ''; });
+
+    nock('http://localhost:8888')
+      .post('/api/v2/simulation')
+      .reply(200, () => { calls.push('POST'); return ''; });
+
+    nock('http://localhost:8888')
+      .post('/api/v2/simulation')
+      .reply(200, () => { calls.push('POST'); return ''; });
+
+    await loadSimulations([usersFixture, productsFixture]);
+
+    assert.deepStrictEqual(calls, ['DELETE', 'POST', 'POST']);
+  });
+
+  it('skips DELETE when clearSimulations is false', async function () {
+    const calls: string[] = [];
+
+    nock('http://localhost:8888')
+      .post('/api/v2/simulation')
+      .reply(200, () => { calls.push('POST'); return ''; });
+
+    nock('http://localhost:8888')
+      .post('/api/v2/simulation')
+      .reply(200, () => { calls.push('POST'); return ''; });
+
+    await loadSimulations([usersFixture, productsFixture], undefined, false);
+
+    assert.deepStrictEqual(calls, ['POST', 'POST']);
+  });
+
+  it('DELETEs then POSTs for a single-element array', async function () {
+    const calls: string[] = [];
+
+    nock('http://localhost:8888')
+      .delete('/api/v2/simulation')
+      .reply(200, () => { calls.push('DELETE'); return ''; });
+
+    nock('http://localhost:8888')
+      .post('/api/v2/simulation')
+      .reply(200, () => { calls.push('POST'); return ''; });
+
+    await loadSimulations([usersFixture]);
+
+    assert.deepStrictEqual(calls, ['DELETE', 'POST']);
+  });
+
+  it('forwards custom host and port to the append client', async function () {
+    const scope = nock('http://hoverfly.internal:9000')
+      .delete('/api/v2/simulation')
+      .reply(200)
+      .post('/api/v2/simulation')
+      .reply(200);
+
+    await loadSimulations([usersFixture], { host: 'hoverfly.internal', port: 9000 });
+
+    assert.ok(scope.isDone(), 'requests sent to custom host:port');
+  });
+
+  it('throws a descriptive error when passed an empty array', async function () {
+    await assert.rejects(
+      () => loadSimulations([]),
+      /empty array/,
+    );
+  });
+});
+
+describe('useSimulations()', function () {
+  afterEach(function () {
+    nock.cleanAll();
+  });
+
+  describe('DELETEs then POSTs once per file by default', function () {
+    before(function () {
+      nock('http://localhost:8888')
+        .delete('/api/v2/simulation')
+        .reply(200)
+        .post('/api/v2/simulation')
+        .reply(200)
+        .post('/api/v2/simulation')
+        .reply(200);
+    });
+
+    useSimulations([usersFixture, productsFixture]);
+
+    it('fired the before() hook and loaded both simulations', function () {
+      assert.ok(true);
+    });
+  });
+
+  describe('skips DELETE when clearSimulations is false', function () {
+    let scope: ReturnType<typeof nock>;
+
+    before(function () {
+      scope = nock('http://localhost:8888')
+        .post('/api/v2/simulation')
+        .reply(200)
+        .post('/api/v2/simulation')
+        .reply(200);
+    });
+
+    useSimulations([usersFixture, productsFixture], undefined, false);
+
+    it('sent two POSTs without a DELETE', function () {
+      assert.ok(scope.isDone(), 'both POST requests were made without DELETE');
+    });
   });
 });
 

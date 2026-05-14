@@ -8,7 +8,7 @@
  */
 import * as assert from 'assert';
 import axios from 'axios';
-import { loadSimulation, createClient } from '../../src/index';
+import { loadSimulation, loadSimulations, createClient } from '../../src/index';
 import { CLIENT_OPTIONS, SERVICE_URL, USERS_SIM, PRODUCTS_SIM, getSimulationPairs } from './helpers';
 
 // ---------------------------------------------------------------------------
@@ -109,5 +109,70 @@ describe('loadSimulation() — per-test switching', function () {
     const products = res.data as Array<{ name: string }>;
     assert.ok(products.length > 0);
     assert.strictEqual(products[0].name, 'Widget');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// loadSimulations(): multi-file array
+// ---------------------------------------------------------------------------
+describe('loadSimulations()', function () {
+  const client = createClient(CLIENT_OPTIONS);
+
+  beforeEach(async function () {
+    await client.clearSimulations();
+  });
+
+  it('loads both simulations — GET /users and GET /products both respond', async function () {
+    await loadSimulations([USERS_SIM, PRODUCTS_SIM], CLIENT_OPTIONS);
+
+    const usersRes = await axios.get(`${SERVICE_URL}/users`);
+    assert.strictEqual(usersRes.status, 200);
+    const users = usersRes.data as Array<{ name: string }>;
+    assert.strictEqual(users[0].name, 'Alice');
+
+    const productsRes = await axios.get(`${SERVICE_URL}/products`);
+    assert.strictEqual(productsRes.status, 200);
+    const products = productsRes.data as Array<{ name: string }>;
+    assert.strictEqual(products[0].name, 'Widget');
+  });
+
+  it('replaces prior simulation by default — GET /users no longer matches after loading only products', async function () {
+    await loadSimulation(USERS_SIM, CLIENT_OPTIONS);
+    await loadSimulations([PRODUCTS_SIM], CLIENT_OPTIONS);
+
+    const productsRes = await axios.get(`${SERVICE_URL}/products`);
+    assert.strictEqual(productsRes.status, 200);
+
+    await assert.rejects(
+      () => axios.get(`${SERVICE_URL}/users`),
+      (err: unknown) => {
+        assert.ok(err instanceof Error);
+        return true;
+      },
+    );
+  });
+
+  it('skips DELETE when clearSimulations is false — prior simulation survives', async function () {
+    await loadSimulation(USERS_SIM, CLIENT_OPTIONS);
+    await loadSimulations([PRODUCTS_SIM], CLIENT_OPTIONS, false);
+
+    const usersRes = await axios.get(`${SERVICE_URL}/users`);
+    assert.strictEqual(usersRes.status, 200);
+
+    const productsRes = await axios.get(`${SERVICE_URL}/products`);
+    assert.strictEqual(productsRes.status, 200);
+  });
+
+  it('admin API shows pairs from all files in the array', async function () {
+    await loadSimulations([USERS_SIM, PRODUCTS_SIM], CLIENT_OPTIONS);
+    const pairs = await getSimulationPairs();
+    assert.ok(pairs.length >= 2, `expected at least 2 pairs after loading both files, got ${pairs.length}`);
+  });
+
+  it('rejects with a descriptive error when passed an empty array', async function () {
+    await assert.rejects(
+      () => loadSimulations([], CLIENT_OPTIONS),
+      /empty array/,
+    );
   });
 });
